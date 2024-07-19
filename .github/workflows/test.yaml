@@ -1,0 +1,31 @@
+name: Test
+
+on:
+  workflow_dispatch
+
+jobs:
+  main-job: 
+    name: job1
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      - run: false
+
+  all-good:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    name: AllGood
+    needs: [main-job]
+    steps:
+      - run: |
+          result="${{ needs.main-job.result }}"
+          if [[ $result == "success" ]]; then
+            exit 0
+          else
+            exit 1
+          fi
